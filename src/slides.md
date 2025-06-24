@@ -6,7 +6,7 @@ Python Meetup de Grenoble - Juin 2025
 
 ---
 
-# C'est quoi le "logging"
+## C'est quoi le "logging" ?
 
 * la "journalisation" en français
 * une version surpuissante de "print"
@@ -15,7 +15,7 @@ Python Meetup de Grenoble - Juin 2025
 
 ---
 
-# Plus concrètement ?
+## Plus concrètement ?
 
 ```python
 error while processing the request: ''
@@ -30,7 +30,7 @@ except Exception as e:
 
 ---
 
-# La différence ?
+## La différence ?
 
 ```python
 [INFO] received request, processing data...
@@ -42,7 +42,6 @@ Traceback (most recent call last):
 KeyError: ''
 
 The above exception was the direct cause of the following exception:
-
 Traceback (most recent call last):
   File "main.py", line 55, in process_request
     is_valid = check_input(request.json_content)
@@ -52,6 +51,8 @@ ValidationError: could not find required key=''
 ```
 
 ---
+
+## La base
 
 ```python
 import logging
@@ -65,6 +66,8 @@ raise Error(...) from e
 ```
 
 ---
+
+## Exemple de rendu par Loguru
 
 ![Loguru](./betterstack_loguru_pretty_logging.png)
 
@@ -81,7 +84,11 @@ raise Error(...) from e
 
 ---
 
-# Pas de print !!!
+# Mes conseils
+
+---
+
+## Pas de print !!!
 
 * contexte : application en prod (pas un script jetable)
 * action : remplacer tous les `print` par des `logger.xxx`
@@ -89,12 +96,14 @@ raise Error(...) from e
 * gains :
   * ajoute du contexte par défaut (niveau de log, logger, ...)
   * formattage standardisé / standardisable
+    * `logging.Formatter("%(asctime)s %(levelname)s [%(process)d|%(thread)d] %(name)s - %(message)s")`
+    * `2025-06-24 15:06:42,233 ERROR [25656|28776] my-app.main - error while processing the request`
   * thread-safe
   * pilotable (stdout, stderr, collecteur, ...)
 
 ---
 
-# Plusieurs flux
+## Plusieurs flux
 
 * contexte : un gros système
 * action : logger différentes parties dans différents fichiers
@@ -110,11 +119,13 @@ raise Error(...) from e
 
 ---
 
+## Machinerie puissante (mais complexe)
+
 ![](./logging_flow.png)
 
 ---
 
-# Quels logs mettre ?
+## Quels logs mettre ?
 
 * contexte : je ne sais pas quels logs mettre
 * action :
@@ -138,14 +149,21 @@ raise Error(...) from e
   * créer des logs "structurés" (JSON, facile à parser)
 * gains :
   * une véritable "visibilité" des problèmes (cf slide suivante)
+  * une automatisation de la découverte des problèmes
+  * le débug facilité entre plusieurs (micro-)services
+  * profiter d'un tas d'outils (gratuits ou pas) pour gagner du temps
 
 ---
 
-![](./periodique_client.png)
-
----
+## Exemple de rendu de log structuré
 
 ![](./log_errors_structured.png)
+
+---
+
+## Exemple de graphique
+
+![](./periodique_client.png)
 
 ---
 
@@ -164,12 +182,12 @@ raise Error(...) from e
 
 # Quelques bêtes erreurs
 
-* la lib est en CamelCase ... 🐫
+* la lib `logging` est en CamelCase ... 🐫
 * pas de `logging.basicConfig()` en prod, trop basique !
 * toujours faire `logger = logging.getLogger(...)` et non pas `logging.Logger()`
 * ne pas passer par le logger root :
-  * `logging.debug/info/warning/error/critical()`
-  * `logger = logging.getLoger() ; logger.debug(...)`
+  * 🙅 `logging.debug/info/warning/error/critical()`
+  * 🆗 `logger = logging.getLoger() ; logger.debug(...)`
 * attention aux secrets, clés d'API, données soumises au RGPD, ... (comme avec print !)
 
 ---
@@ -177,14 +195,18 @@ raise Error(...) from e
 # Conclusion
 
 * ne pas réinventer la roue : délaisser `print` en faveur de `logging`
-* screenshot de Grafana ?
+* exiger d'avoir de la visibilité sur le fonctionnement des applis
+* commencer petit, finir loin
 
 ---
 
 ## Sources
 
+* stdlib Python :
+  * [`logging` — Logging facility for Python](https://docs.python.org/3/library/logging.html)
+  * [Logging HOWTO](https://docs.python.org/3/howto/logging.html)
+  * [Logging Cookbook](https://docs.python.org/3/howto/logging-cookbook.html)
 * [Please don't hijack my Python root logger](https://rednafi.com/python/no_hijack_root_logger/)
-* TODO
 
 ---
 
